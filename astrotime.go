@@ -290,6 +290,11 @@ func calcSolNoonUTC(t float64, longitude float64) float64 {
 // Calculate the UTC sunrise for the given day at the given location
 func calcSunriseUTC(jd float64, latitude float64, longitude float64, solarElevation float64) float64 {
 
+	// original java code uses a non-standard definition of longitude
+	// see: http://www.esrl.noaa.gov/gmd/grad/solcalc/sunrise.html
+	// correct by reversing sign
+	longitude = -longitude
+
 	t := calcTimeJulianCent(jd)
 
 	// *** Find the time of solar noon at the location, and use
@@ -383,6 +388,12 @@ func calcHourAngleSunset(lat float64, solarDec float64, solarElevation float64) 
 //   time in minutes from zero Z
 
 func calcSunsetUTC(jd float64, latitude float64, longitude float64, solarElevation float64) float64 {
+
+	// original java code uses a non-standard definition of longitude
+	// see: http://www.esrl.noaa.gov/gmd/grad/solcalc/sunrise.html
+	// correct by reversing sign
+	longitude = -longitude
+
 	t := calcTimeJulianCent(jd)
 
 	// *** Find the time of solar noon at the location, and use
