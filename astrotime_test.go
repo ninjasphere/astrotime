@@ -28,9 +28,7 @@ type test struct {
 }
 
 // test data from http://www.timeanddate.com/worldclock/sunrise.html
-
 var (
-	// -33.900626, 151.196210
 	SYDNEY = location{
 		timezone:  "Australia/Sydney",
 		latitude:  -33.900626,
@@ -83,7 +81,7 @@ func TestData(t *testing.T) {
 			}
 
 			checkDate("dawn", datum.times.dawn, NextDawn(midnight, datum.location.latitude, datum.location.longitude, CIVIL_DAWN))
-			checkDate("sunrise", datum.times.sunrise, CalcSunrise(midnight, datum.location.latitude, datum.location.longitude))
+			checkDate("sunrise", datum.times.sunrise, NextSunrise(midnight, datum.location.latitude, datum.location.longitude))
 			checkDate("sunset", datum.times.sunset, NextSunset(midnight, datum.location.latitude, datum.location.longitude))
 			checkDate("dusk", datum.times.dusk, NextDusk(midnight, datum.location.latitude, datum.location.longitude, CIVIL_DUSK))
 		}
