@@ -332,7 +332,13 @@ func calcSunriseUTC(jd float64, latitude float64, longitude float64, solarElevat
 // is -solarElevation degrees below the horizon.
 func CalcDawn(t time.Time, latitude float64, longitude float64, solarElevation float64) time.Time {
 	jd := CalcJD(t)
-	sunriseUTC := time.Duration(math.Floor(calcSunriseUTC(jd, latitude, longitude, solarElevation)*60) * 1e9)
+
+	d := calcSunriseUTC(jd, latitude, longitude, solarElevation)
+	if math.IsNaN(d) {
+		return time.Time{}
+	}
+
+	sunriseUTC := time.Duration(math.Floor(d*60) * 1e9)
 	loc, _ := time.LoadLocation("UTC")
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, loc).Add(sunriseUTC).In(t.Location())
 }
@@ -430,7 +436,13 @@ func calcSunsetUTC(jd float64, latitude float64, longitude float64, solarElevati
 // be -solarElevation degrees below the horizon.
 func CalcDusk(t time.Time, latitude float64, longitude float64, solarElevation float64) time.Time {
 	jd := CalcJD(t)
-	sunsetUTC := time.Duration(math.Floor(calcSunsetUTC(jd, latitude, longitude, solarElevation)*60) * 1e9)
+
+	d := calcSunsetUTC(jd, latitude, longitude, solarElevation)
+	if math.IsNaN(d) {
+		return time.Time{}
+	}
+
+	sunsetUTC := time.Duration(math.Floor(d*60) * 1e9)
 	loc, _ := time.LoadLocation("UTC")
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, loc).Add(sunsetUTC).In(t.Location())
 }
@@ -444,6 +456,9 @@ func CalcSunset(t time.Time, latitude float64, longitude float64) time.Time {
 // NextSunrise returns date/time of the next sunrise after tAfter
 func NextSunrise(tAfter time.Time, latitude float64, longitude float64) (tSunrise time.Time) {
 	tSunrise = CalcSunrise(tAfter, latitude, longitude)
+	if tSunrise.IsZero() {
+		return
+	}
 	if tAfter.After(tSunrise) {
 		tSunrise = CalcSunrise(tAfter.Add(OneDay), latitude, longitude)
 	}
@@ -453,6 +468,9 @@ func NextSunrise(tAfter time.Time, latitude float64, longitude float64) (tSunris
 // NextDawn returns date/time of the next dawn at the specified solar solarElevation, after the specified time.
 func NextDawn(tAfter time.Time, latitude float64, longitude float64, solarElevation float64) (tSunrise time.Time) {
 	tSunrise = CalcDawn(tAfter, latitude, longitude, solarElevation)
+	if tSunrise.IsZero() {
+		return
+	}
 	if tAfter.After(tSunrise) {
 		tSunrise = CalcDawn(tAfter.Add(OneDay), latitude, longitude, solarElevation)
 	}
@@ -462,6 +480,9 @@ func NextDawn(tAfter time.Time, latitude float64, longitude float64, solarElevat
 // NextSunset returns date/time of the next sunset after tAfter
 func NextSunset(tAfter time.Time, latitude float64, longitude float64) (tSunset time.Time) {
 	tSunset = CalcSunset(tAfter, latitude, longitude)
+	if tSunset.IsZero() {
+		return
+	}
 	if tAfter.After(tSunset) {
 		tSunset = CalcSunset(tAfter.Add(OneDay), latitude, longitude)
 	}
@@ -471,6 +492,9 @@ func NextSunset(tAfter time.Time, latitude float64, longitude float64) (tSunset 
 // NextDusk returns date/time of the next dusk at the specified solar solarElevation, after the specified tine.
 func NextDusk(tAfter time.Time, latitude float64, longitude float64, solarElevation float64) (tSunset time.Time) {
 	tSunset = CalcDusk(tAfter, latitude, longitude, solarElevation)
+	if tSunset.IsZero() {
+		return
+	}
 	if tAfter.After(tSunset) {
 		tSunset = CalcDusk(tAfter.Add(OneDay), latitude, longitude, solarElevation)
 	}

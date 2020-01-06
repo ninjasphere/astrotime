@@ -30,20 +30,21 @@ type test struct {
 // test data from http://www.timeanddate.com/worldclock/sunrise.html
 
 var (
+	// -33.900626, 151.196210
 	SYDNEY = location{
 		timezone:  "Australia/Sydney",
-		latitude:  -33.86,
-		longitude: -151.20,
+		latitude:  -33.900626,
+		longitude: 151.196210,
 	}
 	STOCKHOLM = location{
 		timezone:  "Europe/Stockholm",
-		latitude:  59.33,
-		longitude: -18.067,
+		latitude:  59.332953,
+		longitude: 18.059986,
 	}
 	NEWYORK = location{
 		timezone:  "America/New_York",
-		latitude:  40.642,
-		longitude: 74.017,
+		latitude:  40.692197,
+		longitude: -73.940547,
 	}
 	NOVEMBER = "2014-11-01"
 	JULY     = "2015-07-01"
@@ -77,12 +78,12 @@ func TestData(t *testing.T) {
 				}
 				actualError := math.Abs((float64)(timestamp.Sub(calculated)))
 				if actualError > float64(datum.error) {
-					t.Errorf("calculated -> %v, wanted -> %v %d -> (wanted < %d). location=%s date=%s", calculated, timestamp, actualError, datum.error, datum.location.timezone, datum.times.date)
+					t.Errorf("calculated -> %v, wanted -> %v %f -> (wanted < %d). location=%s date=%s", calculated, timestamp, actualError, datum.error, datum.location.timezone, datum.times.date)
 				}
 			}
 
 			checkDate("dawn", datum.times.dawn, NextDawn(midnight, datum.location.latitude, datum.location.longitude, CIVIL_DAWN))
-			checkDate("sunrise", datum.times.sunrise, NextSunrise(midnight, datum.location.latitude, datum.location.longitude))
+			checkDate("sunrise", datum.times.sunrise, CalcSunrise(midnight, datum.location.latitude, datum.location.longitude))
 			checkDate("sunset", datum.times.sunset, NextSunset(midnight, datum.location.latitude, datum.location.longitude))
 			checkDate("dusk", datum.times.dusk, NextDusk(midnight, datum.location.latitude, datum.location.longitude, CIVIL_DUSK))
 		}
