@@ -40,6 +40,18 @@ const (
 	SUNSET            = 0
 )
 
+var (
+	utc *time.Location
+)
+
+func init() {
+	tl, err := time.LoadLocation("UTC")
+	if err != nil {
+		panic(err)
+	}
+	utc = tl
+}
+
 // CalcJD converts a time.Time object to a julian date
 func CalcJD(t time.Time) float64 {
 	y, m, d, hh, mm, ss, ms := t.Year(), int(t.Month()), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond()/1e6
@@ -339,8 +351,7 @@ func CalcDawn(t time.Time, latitude float64, longitude float64, solarElevation f
 	}
 
 	sunriseUTC := time.Duration(math.Floor(d*60) * 1e9)
-	loc, _ := time.LoadLocation("UTC")
-	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, loc).Add(sunriseUTC).In(t.Location())
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, utc).Add(sunriseUTC).In(t.Location())
 }
 
 // CalcSunrise calculates the sunrise, in local time,  on the day t at the
@@ -443,8 +454,7 @@ func CalcDusk(t time.Time, latitude float64, longitude float64, solarElevation f
 	}
 
 	sunsetUTC := time.Duration(math.Floor(d*60) * 1e9)
-	loc, _ := time.LoadLocation("UTC")
-	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, loc).Add(sunsetUTC).In(t.Location())
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, utc).Add(sunsetUTC).In(t.Location())
 }
 
 // CalcSunset calculates the sunset, in local time,  on the day t at the
